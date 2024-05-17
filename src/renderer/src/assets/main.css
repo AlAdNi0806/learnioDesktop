@@ -108,6 +108,7 @@ body {
 }
 
 @media (max-width: 350px) {
+
   .tip,
   .actions {
     display: none;
@@ -119,6 +120,7 @@ body {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }
@@ -138,8 +140,10 @@ body {
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%; */
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
 
     --primary: 222.2 47.4% 11.2%;
     --primary-foreground: 210 40% 98%;
@@ -194,4 +198,17 @@ body {
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+}
+
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-xl
 }

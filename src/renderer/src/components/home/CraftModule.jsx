@@ -17,19 +17,22 @@ import useStore from '../../lib/statusMachine'
 export default function CraftModule() {
     // const { currentModuleName } = useStore()
     const [modules, setModules] = useState()
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
     const { authState } = useAuth();
     const token = authState.token
-    const {setCurrentModuleTopicPublished} = useStore()
+    const { setCurrentModuleTopicPublished } = useStore()
 
     useEffect(() => {
         const getUserModules = async () => {
             const fetchedModules = await GetUserModules(token);
             setModules(fetchedModules.modules)
         }
+        setLoading(false)
         setCurrentModuleTopicPublished(false)
 
         getUserModules();
+        setLoading(true)
     }, [])
 
     return (
@@ -47,9 +50,9 @@ export default function CraftModule() {
                 <div className="grid gric-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <CreateModuleBtn />
                     <Suspense
-                    // fallback={[1, 2, 3, 4].map((el) => (
-                    //     <FormCardSkeleton key={el} />
-                    // ))}
+                        fallback={[1, 2, 3, 4].map((el) => (
+                            <FormCardSkeleton key={el} />
+                        ))}
                     >
                         <FormCards modules={modules} />
                     </Suspense>

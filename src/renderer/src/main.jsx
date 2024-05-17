@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route, Routes, Outlet, RouterProvider, createB
 import Auth from './routes/Auth'
 import Home from './routes/Home'
 import Welcome from './components/home/Welcome'
-import AiModules from './components/home/AiModules'
+import CraftAiModules from './components/home/CraftAiModules'
 import Profile from './components/home/Profile'
 import SideNavbar from './components/home/SideNavbar'
 import AiModuleTopics from './components/aiModule/AiModuleTopics'
@@ -61,7 +61,7 @@ export const MainLayout = () => {
         {authState?.authenticated ? (
           <Route path="/" element={<Home />}>
             <Route path="welcome" element={<Welcome />} />
-            <Route path="aiModules" element={<AiModules />}/>
+            <Route path="aiModules" element={<CraftAiModules />}/>
             <Route path="aiModules/:id" element={<AiModuleTopics />}></Route>
             <Route path="aiModules/topics/:id" element={<AiModuleTopicGame />}></Route>
             <Route path="userEnrolledAiModules" element={<UserEnrolledAiModules />}/>

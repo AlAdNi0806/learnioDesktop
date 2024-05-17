@@ -10,6 +10,7 @@ import { Input } from "../../ui/input";
 import { Textarea } from "../../ui/textarea";
 import { useAuth } from "../../../lib/AuthContext";
 import useStore from '../../../lib/statusMachine'
+import { useState } from "react";
 
 
 
@@ -18,6 +19,8 @@ function CreateModuleBtn() {
     const navigate = useNavigate();
     const { authState } = useAuth();
     const token = authState.token
+
+    const [open, setOpen] = useState(false);
 
     const form = useForm({
         // resolver: zodResolver(formSchema),
@@ -37,6 +40,8 @@ function CreateModuleBtn() {
             setCurrentUserModulePublished(false)
             setCurrentUserModuleId(id)
             setCurrentUserModuleName(name)
+
+            setOpen(false);
             navigate(`/craftModules/${id}`)
         } catch (error) {
             toast({
@@ -48,7 +53,7 @@ function CreateModuleBtn() {
     }
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button
                     variant={"outline"}

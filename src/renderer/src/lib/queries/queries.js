@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // const API_URL = "http://10.192.215.208:3000";
-const API_URL = "https://expressserver-pq6l.onrender.com";
+// const API_URL = "https://expressserver-pq6l.onrender.com";
+const API_URL = "http://localhost:3000";
 // const API_URL = "https://expressserver-pq6l.onrender.com";
 
 // const API_URL = "https://expressserver-1.onrender.com";
@@ -458,6 +459,146 @@ export const ControlUpdateUserRoles = async (token, userId, roles) => {
             token: token,
             userId: userId,
             roles: roles
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+
+export const GetAllLinkedAiDirectoriesAndFiles = async (token) => {
+    const response = await axios.post(
+        `${API_URL}/user/getAllLinkedAiDirectoriesAndFiles`,
+        {
+            token: token,
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const UpsertAiDirectory = async ({ token, aiDirectoryId, parentAiDirectoryId, name, icon, iconPack, title, description }) => {
+    const response = await axios.post(
+        `${API_URL}/user/upsertAiDirectory`,
+        {
+            token: token,
+            aiDirectoryId: aiDirectoryId,
+            name: name,
+            icon: icon,
+            iconPack: iconPack,
+            title: title,
+            description: description,
+            parentAiDirectoryId: parentAiDirectoryId
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const UpsertAiFile = async ({ token, aiFileId, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType }) => {
+    // console.log("Received values:", token, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType);
+    const response = await axios.post(
+        `${API_URL}/user/upsertAiFile`,
+        {
+            token: token,
+            aiFileId: aiFileId,
+            name: name,
+            icon: icon,
+            iconPack: iconPack,
+            title: title,
+            description: description,
+            shortened: shortened,
+            type: fileType,
+            parentAiDirectoryId: parentAiDirectoryId
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const UpsertAiFileElement = async ({ token, aiFileId, aiFileElementId, title, description }) => {
+    // console.log("Received values:", token, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType);
+    const response = await axios.post(
+        `${API_URL}/user/upsertAiFileElement`,
+        {
+            token: token,
+            aiFileId: aiFileId,
+            aiFileElementId: aiFileElementId,
+            title: title,
+            description, description
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const DeleteAiDirectory = async (token, aiDirectoryId) => {
+    // console.log("Received values:", token, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType);
+    const response = await axios.post(
+        `${API_URL}/user/deleteAiDirectory`,
+        {
+            aiDirectoryId: aiDirectoryId
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const DeleteAiFile = async (token, aiFileId) => {
+    // console.log("Received values:", token, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType);
+    const response = await axios.post(
+        `${API_URL}/user/deleteAiFile`,
+        {
+            aiFileId: aiFileId
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const DeleteAiFileElement = async (token, aiFileElementId) => {
+    // console.log("Received values:", token, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType);
+    const response = await axios.post(
+        `${API_URL}/user/deleteAiFileElement`,
+        {
+            aiFileElementId: aiFileElementId
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const GetAiFileElements = async (token, aiFileId) => {
+    // console.log("Received values:", token, parentAiDirectoryId, name, icon, iconPack, title, description, shortened, fileType);
+    console.log('APSODIFJAPSOEJVPOSAIP', aiFileId)
+    const response = await axios.post(
+        `${API_URL}/user/getAiFileElements`,
+        {
+            aiFileId: aiFileId
         },
         {
             headers: { Authorization: `Bearer ${token}` },
