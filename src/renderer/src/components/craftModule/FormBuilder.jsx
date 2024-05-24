@@ -14,11 +14,14 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import ReactConfetti from 'react-confetti'
 import { Button } from '../ui/button'
+import SettingsBtn from '../public/card/SettingBtn'
 
 function FormBuilder() {
     const { currentUserModuleTopicName, currentUserModuleTopicId, currentModuleTopicPublished, setCurrentModuleTopicPublished, currentUserModuleId } = useStore()
     const [isReady, setIsReady] = useState(false)
-    const { setElements } = useDesigner()
+    const { setElements, setSelectedElement, elements } = useDesigner()
+    const [publicVariantsContent, setPublicVariantsContent] = useState([])
+    const [publishedVersion, setPublishedVersion] = useState([])
     const { authState } = useAuth();
     const token = authState.token
 
@@ -40,13 +43,26 @@ function FormBuilder() {
         if (isReady) return;
         const getModuleTopicContent = async () => {
             const userModuleTopicContent = await GetUserModuleTopicContent(token, currentUserModuleTopicId)
+            console.log(userModuleTopicContent)
             const elements = JSON.parse(userModuleTopicContent.moduleTopicContent);
             setElements(elements)
+            setSelectedElement(null)
+            setPublicVariantsContent(JSON.parse(userModuleTopicContent.module.publishedContent))
+            setPublishedVersion(userModuleTopicContent.module.version)
             setIsReady(true)
         }
         getModuleTopicContent()
-        
-    }, [currentUserModuleTopicId])
+
+    }, [currentUserModuleTopicId, setSelectedElement, isReady])
+
+    const reloadTopic = async () => {
+        const userModuleTopicContent = await GetUserModuleTopicContent(token, currentUserModuleTopicId)
+        console.log(userModuleTopicContent)
+        const elements = JSON.parse(userModuleTopicContent.moduleTopicContent);
+        setElements(elements)
+        setPublicVariantsContent(JSON.parse(userModuleTopicContent.module.publishedContent))
+        setPublishedVersion(userModuleTopicContent.module.version)
+    }
 
     if (!isReady) {
         return (
@@ -117,13 +133,14 @@ function FormBuilder() {
     return (
         <DndContext sensors={sensors}>
             <main className=' flex flex-col w-full bg-slate-800 text-white'>
-                <nav className='flex justify-between border-b-2 border-slate-500 p-4 gap-3 items-center'>
-                    <h2 className='truncate font-medium'>
+                <nav className='flex justify-between border-b-2 border-slate-500 p-4 px-8 gap-3 items-center'>
+                    <SettingsBtn reloadTopic={reloadTopic} publishedVersion={publishedVersion} publicVariantsContent={publicVariantsContent} currentUserModuleTopicId={currentUserModuleTopicId} />
+                    <div className='truncate font-medium'>
                         <span className='text-muted-foreground mr-2'>
                             Form:
                         </span>
                         {currentUserModuleTopicName}
-                    </h2>
+                    </div>
                     <div className='flex items-center gap-2'>
                         <PreviewDialogBtn />
                         {true && (
@@ -134,7 +151,7 @@ function FormBuilder() {
                         )}
                     </div>
                 </nav>
-                <div className='flex w-full flex-grow items-center justify-center relative overflow-x-auto h-[200px] bg-accent bg-slate-700 bg-[url(../assets/home/graph-paper.svg)]'>
+                <div className='flex w-full flex-grow items-center justify-center relative  h-[200px] bg-accent bg-slate-700 bg-[url(../assets/home/graph-paper.svg)]'>
                     <Designer />
                 </div>
             </main>

@@ -9,31 +9,38 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../../../ui/form';
 import { Switch } from '../../../ui/switch';
 import { cn } from '../../../../lib/utils';
+import { RxDropdownMenu } from "react-icons/rx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../ui/select';
+import { Separator } from '../../../ui/separator';
+import { Button } from '../../../ui/button';
+import { AiOutlinePlus, AiOutlineClose } from "react-icons/ai";
 
-const type = "TextField";
+const type = "SelectField";
 
 const propertiesSchema = z.object({
     label: z.string().min(2).max(50),
     helperText: z.string().max(200),
     required: z.boolean().default(false),
-    placeholder: z.string().max(50)
+    placeholder: z.string().max(50),
+    options: z.array(z.string()).default([])
 })
 
-export const TextFieldFormElement = {
+export const SelectFieldFormElement = {
     type,
     construct: (id) => ({
         id,
         type,
         extraAttributes: {
-            label: "Text field",
+            label: "Select field",
             helperText: "Helper Text",
             required: false,
-            placeholder: "Value here..."
+            placeholder: "Value here...",
+            options: []
         }
     }),
     designerBtnElement: {
-        icon: Type,
-        label: "Text Field"
+        icon: RxDropdownMenu,
+        label: "Select Field"
     },
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
@@ -52,56 +59,50 @@ function FormComponent({
     elementInstance,
     submitValue,
     isInvalid,
-    defaultValue
+    defaultValue,
 }) {
-    const element = elementInstance
+    const element = elementInstance;
 
-    const [value, setValue] = useState(defaultValue || "")
-    const [error, setError] = useState(false)
+    const [value, setValue] = useState(defaultValue || "");
+    const [error, setError] = useState(false);
 
     useEffect(() => {
-        setError(isInvalid === true)
-    }, [isInvalid])
+        setError(isInvalid === true);
+    }, [isInvalid]);
 
-    const { label, required, placeholder, helperText } = element.extraAttributes
+    const { label, required, placeHolder, helperText, options } = element.extraAttributes;
+    console.log(options)
     return (
-        <div className='text-white flex flex-col gap-2 w-full'>
-            <Label
-                className={cn(
-                    error && "text-red-500"
-                )}
-            >
+        <div className="flex flex-col gap-2 w-full">
+            <Label className={cn(error && "text-red-500")}>
                 {label}
                 {required && "*"}
             </Label>
-            <Input
-                placeholder={placeholder}
-                className={cn(
-                    'bg-transparent',
-                    error && "border-red-500"
-                )}
-                onChange={e => setValue(e.target.value)}
-                onBlur={(e) => {
+            <Select
+                defaultValue={value}
+                onValueChange={(value) => {
+                    setValue(value);
                     if (!submitValue) return;
-                    submitValue(element.id, e.target.value)
-                    const valid = TextFieldFormElement.validate(element, e.target.value)
-                    setError(!valid)
-                    if (!valid) return 
+                    const valid = SelectFieldFormElement.validate(element, value);
+                    setError(!valid);
+                    submitValue(element.id, value);
                 }}
-                value={value}
-            />
-            {helperText && (
-                <p
-                    className={cn(
-                        'text-muted-foreground text-[0.8rem]',
-                        error && "text-red-500"
-                    )}
-                >
-                    {helperText}
-                </p>
-            )}
+            >
+                <SelectTrigger className={cn("w-full", error && "border-red-500")}>
+                    <SelectValue placeholder={placeHolder} />
+                </SelectTrigger>
+                <SelectContent>
+
+                    {options.map((option) => (
+                        <SelectItem key={option} value={option} className=" focus:bg-slate-800 focus:text-white cursor-pointer">
+                            {option}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            {helperText && <p className={cn("text-muted-foreground text-[0.8rem]", error && "text-red-500")}>{helperText}</p>}
         </div>
-    )
+    );
 }
 
 function PropertiesComponent({
@@ -119,7 +120,8 @@ function PropertiesComponent({
             label: element.extraAttributes.label,
             helperText: element.extraAttributes.helperText,
             required: element.extraAttributes.required,
-            placeholder: element.extraAttributes.placeholder
+            placeholder: element.extraAttributes.placeholder,
+            options: element.extraAttributes.options
         }
     })
 
@@ -128,14 +130,15 @@ function PropertiesComponent({
     }, [element, form])
 
     function applyChanges(values) {
-        const { label, helperText, placeholder, required } = values
+        const { label, helperText, placeholder, options, required } = values
         updateElement(element.id, {
             ...element,
             extraAttributes: {
                 label,
                 helperText,
                 placeholder,
-                required
+                required,
+                options
             }
         })
     }
@@ -227,6 +230,62 @@ function PropertiesComponent({
                         </FormItem>
                     )}
                 />
+                <Separator />
+                <FormField
+                    control={form.control}
+                    name="options"
+                    render={({ field }) => (
+                        <FormItem>
+                            <div className="flex justify-between items-center">
+                                <FormLabel>Options</FormLabel>
+                                <Button
+                                    variant={"outline"}
+                                    className="gap-2"
+                                    onClick={(e) => {
+                                        e.preventDefault(); // avoid submit
+                                        form.setValue("options", field.value.concat("New option"));
+                                    }}
+                                >
+                                    <AiOutlinePlus />
+                                    Add
+                                </Button>
+                            </div>
+                            <div className="flex flex-col gap-2">
+                                {form.watch("options").map((option, index) => (
+                                    <div key={index} className="flex items-center justify-between gap-1">
+                                        <Input
+                                            placeholder=""
+                                            value={option}
+                                            onChange={(e) => {
+                                                field.value[index] = e.target.value;
+                                                field.onChange(field.value);
+                                            }}
+                                        />
+                                        <Button
+                                            variant={"ghost"}
+                                            size={"icon"}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                const newOptions = [...field.value];
+                                                newOptions.splice(index, 1);
+                                                field.onChange(newOptions);
+                                            }}
+                                        >
+                                            <AiOutlineClose />
+                                        </Button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <FormDescription>
+                                The helper text of the field. <br />
+                                It will be displayed below the field.
+                            </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <Separator />
                 <FormField
                     control={form.control}
                     name="required"
@@ -240,7 +299,11 @@ function PropertiesComponent({
                                 </FormDescription>
                             </div>
                             <FormControl>
-                                <Switch checked={field.value} onCheckedChange={field.onChange} />
+                                <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-white data-[state=unchecked]:bg-slate-700"
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -263,12 +326,11 @@ function DesignerComponent({
                 {label}
                 {required && "*"}
             </Label>
-            <Input
-                readOnly
-                disabled
-                placeholder={placeholder}
-                className='bg-slate-950'
-            />
+            <Select>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder={placeholder} />
+                </SelectTrigger>
+            </Select>
             {helperText && (
                 <p className='text-muted-foreground text-[0.8rem]'>
                     {helperText}

@@ -1,4 +1,4 @@
-import { Type } from 'lucide-react'
+import { AlignLeft, Type } from 'lucide-react'
 import { Label } from '../../../ui/label';
 import { Input } from '../../../ui/input';
 import { z } from 'zod'
@@ -9,31 +9,35 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../../../ui/form';
 import { Switch } from '../../../ui/switch';
 import { cn } from '../../../../lib/utils';
+import { Textarea } from '../../../ui/textarea';
+import { Slider } from '../../../ui/slider';
 
-const type = "TextField";
+const type = "TextAreaField";
 
 const propertiesSchema = z.object({
     label: z.string().min(2).max(50),
     helperText: z.string().max(200),
     required: z.boolean().default(false),
-    placeholder: z.string().max(50)
+    placeholder: z.string().max(50),
+    rows: z.number().min(1).max(10)
 })
 
-export const TextFieldFormElement = {
+export const TextAreaFieldFormElement = {
     type,
     construct: (id) => ({
         id,
         type,
         extraAttributes: {
-            label: "Text field",
+            label: "TextArea field",
             helperText: "Helper Text",
             required: false,
-            placeholder: "Value here..."
+            placeholder: "Value here...",
+            rows: 3
         }
     }),
     designerBtnElement: {
-        icon: Type,
-        label: "Text Field"
+        icon: AlignLeft,
+        label: "TextArea Field"
     },
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
@@ -63,7 +67,7 @@ function FormComponent({
         setError(isInvalid === true)
     }, [isInvalid])
 
-    const { label, required, placeholder, helperText } = element.extraAttributes
+    const { label, required, placeholder, helperText, rows } = element.extraAttributes
     return (
         <div className='text-white flex flex-col gap-2 w-full'>
             <Label
@@ -74,7 +78,7 @@ function FormComponent({
                 {label}
                 {required && "*"}
             </Label>
-            <Input
+            <Textarea
                 placeholder={placeholder}
                 className={cn(
                     'bg-transparent',
@@ -84,11 +88,12 @@ function FormComponent({
                 onBlur={(e) => {
                     if (!submitValue) return;
                     submitValue(element.id, e.target.value)
-                    const valid = TextFieldFormElement.validate(element, e.target.value)
+                    const valid = TextAreaFormElement.validate(element, e.target.value)
                     setError(!valid)
                     if (!valid) return 
                 }}
                 value={value}
+                rows={rows}
             />
             {helperText && (
                 <p
@@ -119,7 +124,8 @@ function PropertiesComponent({
             label: element.extraAttributes.label,
             helperText: element.extraAttributes.helperText,
             required: element.extraAttributes.required,
-            placeholder: element.extraAttributes.placeholder
+            placeholder: element.extraAttributes.placeholder,
+            rows: element.extraAttributes.rows
         }
     })
 
@@ -128,14 +134,15 @@ function PropertiesComponent({
     }, [element, form])
 
     function applyChanges(values) {
-        const { label, helperText, placeholder, required } = values
+        const { label, helperText, placeholder, required, rows } = values
         updateElement(element.id, {
             ...element,
             extraAttributes: {
                 label,
                 helperText,
                 placeholder,
-                required
+                required,
+                rows
             }
         })
     }
@@ -223,6 +230,29 @@ function PropertiesComponent({
                             <FormDescription>
                                 The helper text of the field. <br /> It will be displayed below the field
                             </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="rows"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>
+                                Rows {form.watch("rows")}
+                            </FormLabel>
+                            <FormControl>
+                                <Slider 
+                                    defaultValue={[field.value]}
+                                    min={1}
+                                    max={10}
+                                    step={1}
+                                    onValueChange={(value) => {
+                                        field.onChange(value[0])
+                                    }}
+                                />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}

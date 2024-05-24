@@ -13,10 +13,13 @@ function ModuleTopicForm() {
 
     useEffect(() => {
         const getModuleTopicContent = async () => {
-            const userModuleTopicContent = await GetModuleTopicContent(token, currentModuleTopicId)
-            const elements = JSON.parse(userModuleTopicContent.moduleTopicContent);
-            setContent(elements)
+            const userModuleTopic = await GetModuleTopicContent(token, currentModuleTopicId)
+            console.log(userModuleTopic)
+            const elements = JSON.parse(userModuleTopic.moduleTopicContent.publishedContent);
             console.log(elements)
+            const element = JSON.parse(elements[userModuleTopic.moduleTopicContent.version  ])
+            console.log(element)
+            setContent(element)
         }
         getModuleTopicContent()
     }, [])

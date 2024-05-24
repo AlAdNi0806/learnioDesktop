@@ -142,10 +142,13 @@ function Designer() {
                                 />
                             ))}
                         </div>
+                        
                     )}
                 </div>
+                
             </div>
             <DesignerSidebar />
+            
         </div>
     )
 }
@@ -185,6 +188,7 @@ function DesignerElementWrapper({ element }) {
     if (draggable.isDragging) return null;
 
     const DesignerElement = FormElements[element.type].designerComponent;
+    // const DesignerElement = FormElements[element.type].formComponent;
 
     return (
         <div

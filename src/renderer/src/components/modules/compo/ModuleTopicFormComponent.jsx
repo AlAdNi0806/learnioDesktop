@@ -86,9 +86,9 @@ function ModuleTopicFormComponent({ content }) {
     }
 
     return (
-        <div className='flex justify-center w-full h-full items-center p-8'>
+        <div className='flex justify-center w-full h-full items-center p-8 overflow-hidden'>
             <div
-                className='max-w-[620px] flex flex-col gap-4 flex-grow bg-slate-950 w-full p-8 overflow-y-auto border border-blue-950 shadow-xl shadow-blue-700 rounded'
+                className='max-w-[1000px] h-full overflow-auto flex flex-col gap-4 flex-grow bg-slate-950 w-full p-8 overflow-y-auto border border-blue-950 shadow-xl shadow-blue-700 rounded'
                 key={renderKey}
             >
                 {content.map((element) => {

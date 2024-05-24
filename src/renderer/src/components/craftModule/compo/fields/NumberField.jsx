@@ -1,4 +1,4 @@
-import { Type } from 'lucide-react'
+import { ArrowUp10, Type } from 'lucide-react'
 import { Label } from '../../../ui/label';
 import { Input } from '../../../ui/input';
 import { z } from 'zod'
@@ -10,7 +10,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Switch } from '../../../ui/switch';
 import { cn } from '../../../../lib/utils';
 
-const type = "TextField";
+const type = "NumberField";
 
 const propertiesSchema = z.object({
     label: z.string().min(2).max(50),
@@ -19,21 +19,21 @@ const propertiesSchema = z.object({
     placeholder: z.string().max(50)
 })
 
-export const TextFieldFormElement = {
+export const NumberFieldFormElement = {
     type,
     construct: (id) => ({
         id,
         type,
         extraAttributes: {
-            label: "Text field",
+            label: "Number field",
             helperText: "Helper Text",
             required: false,
-            placeholder: "Value here..."
+            placeholder: "0"
         }
     }),
     designerBtnElement: {
-        icon: Type,
-        label: "Text Field"
+        icon: ArrowUp10,
+        label: "Number Field"
     },
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
@@ -75,6 +75,7 @@ function FormComponent({
                 {required && "*"}
             </Label>
             <Input
+                type="number"
                 placeholder={placeholder}
                 className={cn(
                     'bg-transparent',
@@ -84,9 +85,9 @@ function FormComponent({
                 onBlur={(e) => {
                     if (!submitValue) return;
                     submitValue(element.id, e.target.value)
-                    const valid = TextFieldFormElement.validate(element, e.target.value)
+                    const valid = NumberFieldFormElement.validate(element, e.target.value)
                     setError(!valid)
-                    if (!valid) return 
+                    if (!valid) return
                 }}
                 value={value}
             />
@@ -268,6 +269,7 @@ function DesignerComponent({
                 disabled
                 placeholder={placeholder}
                 className='bg-slate-950'
+                type="number"
             />
             {helperText && (
                 <p className='text-muted-foreground text-[0.8rem]'>

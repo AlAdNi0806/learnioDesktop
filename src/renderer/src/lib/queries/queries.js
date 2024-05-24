@@ -2,8 +2,10 @@ import axios from 'axios';
 
 // const API_URL = "http://10.192.215.208:3000";
 // const API_URL = "https://expressserver-pq6l.onrender.com";
-const API_URL = "http://localhost:3000";
-// const API_URL = "https://expressserver-pq6l.onrender.com";
+// const API_URL = "http://localhost:3000";
+
+// const API_URL = "https://expressserver-3.onrender.com";
+const API_URL = "https://z38rh8lf-3000.euw.devtunnels.ms";
 
 // const API_URL = "https://expressserver-1.onrender.com";
 
@@ -291,6 +293,22 @@ export const GetUserModuleTopicContent = async (token, userModuleTopicId) => {
         {
             token: token,
             userModuleTopicId: userModuleTopicId
+        },
+        {
+            headers: { Authorization: `Bearer ${token}` },
+        }
+    );
+    // console.log(response);
+    return response.data;
+}
+
+export const UpdateModuleTopicPublicVersion = async (token, userModuleTopicId, updateModuleTopicPublicVersion) => {
+    const response = await axios.post(
+        `${API_URL}/user/updateModuleTopicPublicVersion`,
+        {
+            token: token,
+            userModuleTopicId: userModuleTopicId,
+            moduleTopicPublicVersion: updateModuleTopicPublicVersion
         },
         {
             headers: { Authorization: `Bearer ${token}` },

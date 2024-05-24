@@ -9,31 +9,31 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../../../ui/form';
 import { Switch } from '../../../ui/switch';
 import { cn } from '../../../../lib/utils';
+import { IoMdCheckbox } from "react-icons/io";
+import { Checkbox } from '../../../ui/checkbox';
 
-const type = "TextField";
+const type = "CheckboxField";
 
 const propertiesSchema = z.object({
     label: z.string().min(2).max(50),
     helperText: z.string().max(200),
     required: z.boolean().default(false),
-    placeholder: z.string().max(50)
 })
 
-export const TextFieldFormElement = {
+export const CheckboxFieldFormElement = {
     type,
     construct: (id) => ({
         id,
         type,
         extraAttributes: {
-            label: "Text field",
+            label: "Checkbox field",
             helperText: "Helper Text",
             required: false,
-            placeholder: "Value here..."
         }
     }),
     designerBtnElement: {
-        icon: Type,
-        label: "Text Field"
+        icon: IoMdCheckbox,
+        label: "Checkbox Field"
     },
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
@@ -42,7 +42,7 @@ export const TextFieldFormElement = {
     validate: (formElement, currentValue) => {
         const element = formElement
         if (element.extraAttributes.required) {
-            return currentValue.length > 0
+            return currentValue === "true"
         }
         return true
     }
@@ -56,7 +56,7 @@ function FormComponent({
 }) {
     const element = elementInstance
 
-    const [value, setValue] = useState(defaultValue || "")
+    const [value, setValue] = useState(defaultValue === 'true' ? true : false)
     const [error, setError] = useState(false)
 
     useEffect(() => {
@@ -64,42 +64,52 @@ function FormComponent({
     }, [isInvalid])
 
     const { label, required, placeholder, helperText } = element.extraAttributes
+    const id = `checkbox=${element.id}`
+    // console.log(required)
     return (
-        <div className='text-white flex flex-col gap-2 w-full'>
-            <Label
+        <div className='text-white flex items-top space-x-2'>
+            <Checkbox
+                id={id}
+                checked={value}
                 className={cn(
-                    error && "text-red-500"
+                    'border-white',
+                    error && 'border-red-500',
                 )}
-            >
-                {label}
-                {required && "*"}
-            </Label>
-            <Input
-                placeholder={placeholder}
-                className={cn(
-                    'bg-transparent',
-                    error && "border-red-500"
-                )}
-                onChange={e => setValue(e.target.value)}
-                onBlur={(e) => {
+                onCheckedChange={(checked) => {
+                    let value = false;
+                    if (checked === true) value = true
+                    setValue(value)
                     if (!submitValue) return;
-                    submitValue(element.id, e.target.value)
-                    const valid = TextFieldFormElement.validate(element, e.target.value)
+                    const stringValue = value ? "true" : "false"
+                    const valid = CheckboxFieldFormElement.validate(
+                        element,
+                        stringValue
+                    )
                     setError(!valid)
-                    if (!valid) return 
+                    submitValue(element.id, stringValue)
                 }}
-                value={value}
             />
-            {helperText && (
-                <p
+            <div className='grid gap-1.5 leading-none'>
+                <Label
+                    htmlFor={id}
                     className={cn(
-                        'text-muted-foreground text-[0.8rem]',
-                        error && "text-red-500"
+                        error && 'text-red-500',
                     )}
                 >
-                    {helperText}
-                </p>
-            )}
+                    {label}
+                    {required && "*"}
+                </Label>
+                {helperText && (
+                    <p
+                        className={cn(
+                            'text-muted-foreground text-[0.8rem]',
+                            error && 'text-red-500',
+                        )}
+                    >
+                        {helperText}
+                    </p>
+                )}
+            </div>
         </div>
     )
 }
@@ -119,7 +129,6 @@ function PropertiesComponent({
             label: element.extraAttributes.label,
             helperText: element.extraAttributes.helperText,
             required: element.extraAttributes.required,
-            placeholder: element.extraAttributes.placeholder
         }
     })
 
@@ -128,13 +137,12 @@ function PropertiesComponent({
     }, [element, form])
 
     function applyChanges(values) {
-        const { label, helperText, placeholder, required } = values
+        const { label, helperText, required } = values
         updateElement(element.id, {
             ...element,
             extraAttributes: {
                 label,
                 helperText,
-                placeholder,
                 required
             }
         })
@@ -175,32 +183,7 @@ function PropertiesComponent({
                         </FormItem>
                     )}
                 />
-                <FormField
-                    control={form.control}
-                    name="placeholder"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>
-                                placeholder
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    {...field}
-                                    className="bg-slate-950 text-white"
-                                    onKeyDown={e => {
-                                        if (e.key === "Enter") {
-                                            e.currentTarget.blur()
-                                        }
-                                    }}
-                                />
-                            </FormControl>
-                            <FormDescription>
-                                The placeholder of the field. <br />
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                
                 <FormField
                     control={form.control}
                     name="helperText"
@@ -255,25 +238,23 @@ function DesignerComponent({
     elementInstance
 }) {
     const element = elementInstance
-    const { label, required, placeholder, helperText } = element.extraAttributes
+    const { label, required, helperText } = element.extraAttributes
+    const id = `checkbox=${element.id}`
     // console.log(required)
     return (
-        <div className='text-white flex flex-col gap-2 w-full'>
-            <Label>
-                {label}
-                {required && "*"}
-            </Label>
-            <Input
-                readOnly
-                disabled
-                placeholder={placeholder}
-                className='bg-slate-950'
-            />
-            {helperText && (
-                <p className='text-muted-foreground text-[0.8rem]'>
-                    {helperText}
-                </p>
-            )}
+        <div className='text-white flex items-top space-x-2'>
+            <Checkbox id={id} className='border-white'/>
+            <div className='grid gap-1.5 leading-none'>
+                <Label htmlFor={id}>
+                    {label}
+                    {required && "*"}
+                </Label>
+                {helperText && (
+                    <p className='text-muted-foreground text-[0.8rem]'>
+                        {helperText}
+                    </p>
+                )}
+            </div>
         </div>
     )
 }
