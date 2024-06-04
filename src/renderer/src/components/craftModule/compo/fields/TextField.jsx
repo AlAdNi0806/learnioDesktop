@@ -13,7 +13,7 @@ import { cn } from '../../../../lib/utils';
 const type = "TextField";
 
 const propertiesSchema = z.object({
-    label: z.string().min(2).max(50),
+    label: z.string().max(50),
     helperText: z.string().max(200),
     required: z.boolean().default(false),
     placeholder: z.string().max(50)

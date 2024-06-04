@@ -13,7 +13,7 @@ import { cn } from '../../../../lib/utils';
 const type = "SubTitleField";
 
 const propertiesSchema = z.object({
-    title: z.string().min(2).max(50),
+    title: z.string().min(2).max(100),
 })
 
 export const SubTitleFieldFormElement = {
@@ -44,7 +44,7 @@ function FormComponent({
     const { title } = element.extraAttributes
 
     return (
-        <p className='text-lg'>
+        <p className='text-xl'>
             {title}
         </p>
     )

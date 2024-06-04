@@ -1,4 +1,4 @@
-import { CaseLower, Heading1, LucideType, Type } from 'lucide-react'
+import { Heading1, ImageIcon, Type, Video } from 'lucide-react'
 import { Label } from '../../../ui/label';
 import { Input } from '../../../ui/input';
 import { z } from 'zod'
@@ -9,26 +9,44 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../../../ui/form';
 import { Switch } from '../../../ui/switch';
 import { cn } from '../../../../lib/utils';
-import { Textarea } from '../../../ui/textarea';
+import { IoIosPhotos } from 'react-icons/io';
+import YouTube from 'react-youtube';
 
-const type = "ParagraphField";
+const type = "VideoField";
 
 const propertiesSchema = z.object({
-    text: z.string().min(2).max(5000),
+    url: z.string().min(2).max(5000),
 })
 
-export const ParagraphFieldFormElement = {
+function getYoutubeId(url) {
+    return url.split('v=')[1];
+}
+
+const YoutubeComponent = ({ videoUrl }) => {
+    const videoId = getYoutubeId(videoUrl);
+    const opts = {
+        height: '390',
+        width: '640',
+        playerVars: {
+            autoplay: 0,
+        },
+    };
+
+    return <YouTube videoId={videoId} opts={opts} />;
+};
+
+export const VideoFieldFormElement = {
     type,
     construct: (id) => ({
         id,
         type,
         extraAttributes: {
-            text: "Text here",
+            url: "https://www.youtube.com/watch?v=GMIawSAygO4",
         }
     }),
     designerBtnElement: {
-        icon: CaseLower,
-        label: "Paragraph Field"
+        icon: Video,
+        label: "Video Field"
     },
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
@@ -42,10 +60,13 @@ function FormComponent({
 }) {
     const element = elementInstance
 
-    const { text } = element.extraAttributes
+    const { url } = element.extraAttributes
 
     return (
-        <pre className="text-slate-400 whitespace-pre-wrap text-justify">{text}</pre>
+        <div className='flex justify-center items-center'>
+            {/* <p>apsodifjapsodifjapsoi</p> */}
+            <YoutubeComponent videoUrl={url}/>
+        </div>
     )
 }
 
@@ -61,7 +82,7 @@ function PropertiesComponent({
         resolver: zodResolver(propertiesSchema),
         mode: "onBlur",
         defaultValues: {
-            text: element.extraAttributes.text,
+            url: element.extraAttributes.title,
         }
     })
 
@@ -70,11 +91,11 @@ function PropertiesComponent({
     }, [element, form])
 
     function applyChanges(values) {
-        const { text } = values;
+        const { url } = values;
         updateElement(element.id, {
             ...element,
             extraAttributes: {
-                text,
+                url,
             },
         });
     }
@@ -90,13 +111,13 @@ function PropertiesComponent({
             >
                 <FormField
                     control={form.control}
-                    name="text"
+                    name="url"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Paragraph Text</FormLabel>
+                            <FormLabel>Video URL</FormLabel>
                             <FormControl>
-                                <Textarea
-                                    rows={25}                                    {...field}
+                                <Input
+                                    {...field}
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") e.currentTarget.blur();
                                     }}
@@ -115,13 +136,13 @@ function DesignerComponent({
     elementInstance
 }) {
     const element = elementInstance
-    const { text } = element.extraAttributes
+    const { url } = element.extraAttributes
     // console.log(required)
     return (
         <div className='text-white flex flex-col gap-2 w-full'>
             <div className="flex flex-col gap-2 w-full">
-                <Label className="text-muted-foreground">Paragraph field</Label>
-                <p className=' truncate'>{text}</p>
+                <Label className="text-muted-foreground">Video field</Label>
+                <p className="text-xl truncate">{url}</p>
             </div>
         </div>
     )

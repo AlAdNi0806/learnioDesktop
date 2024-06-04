@@ -1,4 +1,4 @@
-import { CaseLower, Heading1, LucideType, Type } from 'lucide-react'
+import { Heading1, ImageIcon, Type } from 'lucide-react'
 import { Label } from '../../../ui/label';
 import { Input } from '../../../ui/input';
 import { z } from 'zod'
@@ -9,26 +9,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '../../../ui/form';
 import { Switch } from '../../../ui/switch';
 import { cn } from '../../../../lib/utils';
-import { Textarea } from '../../../ui/textarea';
+import { IoIosPhotos } from 'react-icons/io';
 
-const type = "ParagraphField";
+const type = "ImageField";
 
 const propertiesSchema = z.object({
-    text: z.string().min(2).max(5000),
+    url: z.string().min(2).max(5000),
 })
 
-export const ParagraphFieldFormElement = {
+export const ImageFieldFormElement = {
     type,
     construct: (id) => ({
         id,
         type,
         extraAttributes: {
-            text: "Text here",
+            url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTr7553iJOF6ZBEZ3MqzXY0AKpCtu5woW6HOEOlFrsQ6mnExeNE5Y1ftCy1r_SrdaJ9ekQ",
         }
     }),
     designerBtnElement: {
-        icon: CaseLower,
-        label: "Paragraph Field"
+        icon: ImageIcon,
+        label: "Image Field"
     },
     designerComponent: DesignerComponent,
     formComponent: FormComponent,
@@ -42,10 +42,13 @@ function FormComponent({
 }) {
     const element = elementInstance
 
-    const { text } = element.extraAttributes
+    const { url } = element.extraAttributes
 
     return (
-        <pre className="text-slate-400 whitespace-pre-wrap text-justify">{text}</pre>
+        <div className='flex justify-center items-center'>
+            {/* <p>apsodifjapsodifjapsoi</p> */}
+            <img src={url} alt="Description" className="text-xl rounded-md" />
+        </div>
     )
 }
 
@@ -61,7 +64,7 @@ function PropertiesComponent({
         resolver: zodResolver(propertiesSchema),
         mode: "onBlur",
         defaultValues: {
-            text: element.extraAttributes.text,
+            url: element.extraAttributes.title,
         }
     })
 
@@ -70,11 +73,11 @@ function PropertiesComponent({
     }, [element, form])
 
     function applyChanges(values) {
-        const { text } = values;
+        const { url } = values;
         updateElement(element.id, {
             ...element,
             extraAttributes: {
-                text,
+                url,
             },
         });
     }
@@ -90,13 +93,13 @@ function PropertiesComponent({
             >
                 <FormField
                     control={form.control}
-                    name="text"
+                    name="url"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Paragraph Text</FormLabel>
+                            <FormLabel>Image URL</FormLabel>
                             <FormControl>
-                                <Textarea
-                                    rows={25}                                    {...field}
+                                <Input
+                                    {...field}
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") e.currentTarget.blur();
                                     }}
@@ -115,13 +118,13 @@ function DesignerComponent({
     elementInstance
 }) {
     const element = elementInstance
-    const { text } = element.extraAttributes
+    const { url } = element.extraAttributes
     // console.log(required)
     return (
         <div className='text-white flex flex-col gap-2 w-full'>
             <div className="flex flex-col gap-2 w-full">
-                <Label className="text-muted-foreground">Paragraph field</Label>
-                <p className=' truncate'>{text}</p>
+                <Label className="text-muted-foreground">Image field</Label>
+                <p className="text-xl truncate">{url}</p>
             </div>
         </div>
     )
